@@ -5,8 +5,6 @@ import { useParams, useNavigate } from "react-router-dom"
 import { Check, ImageIcon, Upload, X } from "lucide-react"
 import { submitOrder } from "../utils/api"
 import toast from "react-hot-toast"
-import { Swiper, SwiperSlide } from "swiper/react"
-import { Navigation, Pagination, EffectFade } from "swiper/modules"
 import "swiper/css"
 import "swiper/css/navigation"
 import "swiper/css/pagination"
@@ -27,6 +25,7 @@ interface UploadedImage {
 const PurchasePage = () => {
   const { frameId } = useParams()
   const navigate = useNavigate()
+
   // Update the selectedSize state to use the first collage size by default
   const [selectedSize, setSelectedSize] = useState("6x8")
   const [quantity, setQuantity] = useState(1)
@@ -43,19 +42,23 @@ const PurchasePage = () => {
   const [formSubmitted, setFormSubmitted] = useState(false)
   const [frameNotFound, setFrameNotFound] = useState(false)
   const [isSelected, setIsSelected] = useState(false)
+
   // New state for user uploaded images
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([])
   const [uploadError, setUploadError] = useState("")
+
   // Collage Gallery States
   const [collageSize, setCollageSize] = useState<string | null>(null)
   const [collageCategory, setCollageCategory] = useState<CollageCategory | null>(null)
   const [orientation, setOrientation] = useState<Orientation>("portrait") // Default to portrait
   const [selectedCollageImage, setSelectedCollageImage] = useState<string | null>(null) // New state for selected collage
+
   // Frame Customization States
   const [selectedFrameImage, setSelectedFrameImage] = useState(null)
   const [selectedFrameCategory, setSelectedFrameCategory] = useState<string | null>(null)
   const [selectedGeneralFrameType, setSelectedGeneralFrameType] = useState<string | null>(null)
   const [selectedMountFrameType, setSelectedMountFrameType] = useState<string | null>(null)
+
   // Add a state for special size selection
   const [specialSizeSelected, setSpecialSizeSelected] = useState(false)
 
@@ -531,19 +534,24 @@ const PurchasePage = () => {
     if (!size || !category) {
       return []
     }
+
     // If images exist for this size and category, return them
     if (collageImages[size] && collageImages[size][category]) {
       return collageImages[size][category]
     }
+
     // Otherwise, check if we can use the equivalent orientation size
     const sizeOrientation = getSizeOrientation(size)
+
     // Find a fallback size with the same orientation that has images
     const fallbackSize = Object.keys(collageImages).find((s) => {
       return getSizeOrientation(s) === sizeOrientation && collageImages[s] && collageImages[s][category]
     })
+
     if (fallbackSize) {
       return collageImages[fallbackSize][category]
     }
+
     // Last resort: return some default placeholder images
     return [
       "/placeholder.svg?height=400&width=300",
@@ -556,14 +564,17 @@ const PurchasePage = () => {
   // Function to get frame images based on frame type and user selections
   const getFrameImages = (): { [key: string]: string[] } => {
     if (!selectedFrameData) return {}
+
     const frameCategory = selectedFrameData.category.toLowerCase()
     const frameName = selectedFrameData.name.toLowerCase()
+
     switch (frameCategory) {
       case "general":
         // For General frames (Mount and Glass), filter based on collage selection
         if (collageSize && orientation) {
           const frameType = frameName.includes("mount") ? "mount" : "General"
           const frameImages = frameCustomizationImages[frameType as "mount" | "General"]
+
           // Get the appropriate size key (convert collageSize to match our structure)
           const sizeKey =
             collageSize === "12x18" || collageSize === "18x12"
@@ -571,6 +582,7 @@ const PurchasePage = () => {
               : collageSize === "10x12" || collageSize === "12x10"
                 ? "10x12"
                 : null
+
           if (sizeKey && frameImages) {
             return {
               [`${frameType.charAt(0).toUpperCase() + frameType.slice(1)} Thin`]:
@@ -583,6 +595,7 @@ const PurchasePage = () => {
           }
         }
         return {}
+
       case "modern":
         // Check if it's floating frame
         if (frameName.includes("floating")) {
@@ -594,17 +607,21 @@ const PurchasePage = () => {
           }
           return {}
         }
+
         // For Display frames, show all images without filtering
         if (frameName.includes("display")) {
           return { "Display Frames": frameCustomizationImages.display }
         }
+
         return {}
+
       case "borderless":
         // Check if it's compound frame
         if (frameName.includes("compound")) {
           // For Compound frames, show all images without filtering
           return { "Compound Frames": frameCustomizationImages.compound }
         }
+
         // For Emboss frames, filter using user selection
         if (frameName.includes("emboss")) {
           if (collageSize && orientation) {
@@ -612,7 +629,9 @@ const PurchasePage = () => {
           }
           return {}
         }
+
         return {}
+
       default:
         return {}
     }
@@ -868,6 +887,7 @@ const PurchasePage = () => {
   // Update the getAvailableSizes function to handle special sizes
   const getAvailableSizes = () => {
     if (!selectedFrameData) return []
+
     const sizes = Object.keys(selectedFrameData.prices)
       .filter((size) => size !== "Special") // Filter out the special size for normal listing
       .map((size) => {
@@ -877,6 +897,7 @@ const PurchasePage = () => {
         }
       })
       .filter((item) => item.price !== undefined)
+
     return sizes
   }
 
@@ -895,9 +916,11 @@ const PurchasePage = () => {
       const canvas = document.createElement("canvas")
       const ctx = canvas.getContext("2d")
       const img = new Image()
+
       if (!ctx) {
         return reject(new Error("Failed to get canvas context"))
       }
+
       img.onload = () => {
         // Calculate new dimensions
         let { width, height } = img
@@ -905,10 +928,13 @@ const PurchasePage = () => {
           height = (height * maxWidth) / width
           width = maxWidth
         }
+
         canvas.width = width
         canvas.height = height
+
         // Draw and compress
         ctx.drawImage(img, 0, 0, width, height)
+
         canvas.toBlob(
           (blob) => {
             if (blob) {
@@ -921,9 +947,11 @@ const PurchasePage = () => {
           quality,
         )
       }
+
       img.onerror = (err) => {
         reject(err)
       }
+
       img.src = URL.createObjectURL(file)
     })
   }
@@ -932,33 +960,42 @@ const PurchasePage = () => {
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files ? Array.from(e.target.files) : []
     setUploadError("")
+
     // Validate files
     const maxSize = 5 * 1024 * 1024 // 5MB (before compression)
     const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"]
     const maxFiles = 10
+
     if (uploadedImages.length + files.length > maxFiles) {
       setUploadError(`You can upload maximum ${maxFiles} images`)
       return
     }
+
     const validFiles = files.filter((file) => {
       if (!allowedTypes.includes(file.type)) {
         setUploadError(`${file.name} is not a supported image format`)
         return false
       }
+
       if (file.size > maxSize) {
         setUploadError(`${file.name} is too large. Maximum size is 5MB`)
         return false
       }
+
       return true
     })
+
     if (validFiles.length === 0) return
+
     try {
       // Compress and convert files to base64
       const promises = validFiles.map(async (file) => {
         // Compress the image first
         const compressedFile = await compressImage(file)
+
         return new Promise<UploadedImage>((resolve, reject) => {
           const reader = new FileReader()
+
           reader.onload = (event) => {
             if (event.target?.result) {
               resolve({
@@ -973,16 +1010,20 @@ const PurchasePage = () => {
               reject(new Error("File reading failed"))
             }
           }
+
           reader.onerror = reject
           reader.readAsDataURL(compressedFile)
         })
       })
+
       const results = await Promise.all(promises)
       setUploadedImages((prev) => [...prev, ...results])
+
       const totalCompression = results.reduce((acc, result) => acc + result.originalSize, 0)
       const totalCompressed = results.reduce((acc, result) => acc + result.size, 0)
       const compressionRatio =
         totalCompression > 0 ? (((totalCompression - totalCompressed) / totalCompression) * 100).toFixed(1) : "0"
+
       toast.success(`${results.length} image(s) uploaded and compressed (${compressionRatio}% size reduction)`)
     } catch (error) {
       console.error("Error uploading images:", error)
@@ -998,10 +1039,12 @@ const PurchasePage = () => {
   // Handle form submission with comprehensive order details
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     if (!selectedFrameData) {
       toast.error("Frame data not found. Please go back and select a frame.")
       return
     }
+
     try {
       const orderData = {
         // Customer Information
@@ -1011,6 +1054,7 @@ const PurchasePage = () => {
         customerAddress: formData.address,
         customerWhatsapp: formData.whatsapp,
         customerRequests: formData.requests,
+
         // Frame Information
         frame: {
           id: selectedFrameData.id,
@@ -1018,6 +1062,7 @@ const PurchasePage = () => {
           category: selectedFrameData.category,
           description: selectedFrameData.description,
         },
+
         // Size and Pricing
         size: selectedSize,
         isSpecialSize: selectedSize === "Special",
@@ -1027,6 +1072,7 @@ const PurchasePage = () => {
             : selectedFrameData?.prices[selectedSize as keyof typeof selectedFrameData.prices] || 0,
         quantity,
         totalPrice: calculateTotal(),
+
         // Collage Selection Details
         collageDetails: {
           size: collageSize,
@@ -1034,13 +1080,16 @@ const PurchasePage = () => {
           category: collageCategory || "Not selected",
           selectedImage: selectedCollageImage || "Not selected",
         },
+
         // Frame Customization Details
         frameCustomization: {
           selectedFrameImage: selectedFrameImage || "Not selected",
           frameType: selectedFrameData?.name || "Not specified",
         },
+
         // User uploaded images
         userImages: uploadedImages,
+
         // Order Summary
         orderSummary: {
           frameType: selectedFrameData?.name,
@@ -1054,6 +1103,7 @@ const PurchasePage = () => {
           userImagesCount: uploadedImages.length,
           orderDate: new Date().toISOString(),
         },
+
         // Additional metadata for email
         metadata: {
           orderTimestamp: new Date().toLocaleString(),
@@ -1061,6 +1111,7 @@ const PurchasePage = () => {
           orderSource: "Website Purchase Form",
         },
       }
+
       await submitOrder(orderData)
       setFormSubmitted(true)
       toast.success("Order submitted successfully! Check your email for confirmation.")
@@ -1073,13 +1124,16 @@ const PurchasePage = () => {
   // Calculate total price
   const calculateTotal = () => {
     if (!selectedFrameData) return "0"
+
     // Get the price for the selected size
     let price = 0
+
     if (selectedSize === "Special") {
       price = selectedFrameData.prices["Special"] || 0
     } else {
       price = selectedFrameData.prices[selectedSize as keyof typeof selectedFrameData.prices] || 0
     }
+
     return (price * quantity).toFixed(0)
   }
 
@@ -1103,6 +1157,7 @@ const PurchasePage = () => {
     if (selectedFrameData && selectedFrameData.images.length > 0 && isMounted) {
       setPreviewImage(selectedFrameData.images[0])
     }
+
     return () => {
       isMounted = false
     }
@@ -1160,8 +1215,8 @@ const PurchasePage = () => {
                 <div className="w-[340px] h-[420px] sm:w-[400px] sm:h-[500px] bg-white rounded-xl shadow-2xl flex items-center justify-center overflow-hidden border-8 border-[#c2b09b]">
                   <img src={previewImage || "/placeholder.svg"} alt="Preview" className="w-full h-full object-cover" />
                 </div>
-                {/* Optional: hands holding frame can be added here if images are available */}
               </div>
+
               {/* Shadow under frame */}
               <div className="absolute left-1/2 -translate-x-1/2 bottom-[-30px] w-[220px] h-8 bg-black opacity-10 rounded-full blur-md z-0" />
             </div>
@@ -1173,7 +1228,8 @@ const PurchasePage = () => {
                   <div
                     key={index}
                     onClick={() => setPreviewImage(img)}
-                    className={`relative cursor-pointer flex-shrink-0 transition-all duration-200 ${previewImage === img ? "ring-4 ring-red-400 scale-105" : "hover:scale-105"}`}
+                    className={`relative cursor-pointer flex-shrink-0 transition-all duration-200 ${previewImage === img ? "ring-4 ring-red-400 scale-105" : "hover:scale-105"
+                      }`}
                     style={{ borderRadius: "12px" }}
                   >
                     <img
@@ -1200,7 +1256,7 @@ const PurchasePage = () => {
           </div>
         )}
 
-        {/* Beautiful Collage Gallery Section - Reordered steps */}
+        {/* Beautiful Collage Gallery Section - Updated with new design */}
         <div className="mb-16 bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-6 text-white">
             <h2 className="text-3xl font-bold mb-2 text-center">Collage Gallery</h2>
@@ -1209,27 +1265,31 @@ const PurchasePage = () => {
               find the perfect collage for your space.
             </p>
           </div>
+
           <div className="p-8">
-            {/* Step 1: Size & Price Selection (moved to first) */}
+            {/* Step 1: Size & Price Selection */}
             <div className="mb-10">
               <h3 className="text-3xl md:text-4xl font-serif font-bold text-center mb-10 tracking-wide uppercase">
                 Please select your desired size and the price.
               </h3>
+
               <div className="grid grid-cols-3 gap-y-8 gap-x-4 justify-center">
                 {(() => {
                   // Find the max width and height in the list for scaling
-                  const maxW = Math.max(...collageSizes.map(s => Number(s.size.split("x")[0])))
-                  const maxH = Math.max(...collageSizes.map(s => Number(s.size.split("x")[1])))
+                  const maxW = Math.max(...collageSizes.map((s) => Number(s.size.split("x")[0])))
+                  const maxH = Math.max(...collageSizes.map((s) => Number(s.size.split("x")[1])))
                   const maxBoxHeight = 140
                   const upscaleFactor = 1.3
                   const firstThreeRowsFactor = 1.4
                   const lastRowSizes = ["24x16", "20x30", "30x20"]
+
                   return collageSizes.map((item, idx) => {
                     // Parse width and height from size string
                     const [w, h] = item.size.split("x").map(Number)
                     // Calculate scale for orientation
                     let boxHeight = h ? Math.round(h * (maxBoxHeight / maxH)) : maxBoxHeight
                     let boxWidth = w ? Math.round(w * (maxBoxHeight / maxH)) : maxBoxHeight
+
                     // Upscale only 1st, 2nd, 3rd row (indexes 0-8)
                     if (idx < 9 && !lastRowSizes.includes(item.size)) {
                       boxWidth = Math.round(boxWidth * firstThreeRowsFactor)
@@ -1238,15 +1298,21 @@ const PurchasePage = () => {
                       boxWidth = Math.round(boxWidth * upscaleFactor)
                       boxHeight = Math.round(boxHeight * upscaleFactor)
                     }
+
                     // Font scaling based on box height (or min of width/height)
-                    const fontScale = Math.max(0.7, Math.min(1.2, (Math.min(boxWidth, boxHeight) / maxBoxHeight)))
+                    const fontScale = Math.max(0.7, Math.min(1.2, Math.min(boxWidth, boxHeight) / maxBoxHeight))
+
                     // Find old price if available (simulate with a 20% markup for demo)
                     const oldPrice = Math.round(item.price * 1.25)
+
                     return (
                       <div
                         key={item.size}
-                        className={`border-4 border-black flex flex-col justify-center items-center cursor-pointer transition-all select-none bg-white ${selectedSize === item.size && !specialSizeSelected ? "ring-4 ring-green-400 scale-105" : "hover:scale-105"}`}
-                        style={{ width: boxWidth, height: boxHeight, minWidth: 48, minHeight: 48, padding: '0.5rem' }}
+                        className={`border-4 border-black flex flex-col justify-center items-center cursor-pointer transition-all select-none bg-white ${selectedSize === item.size && !specialSizeSelected
+                            ? "ring-4 ring-green-400 scale-105"
+                            : "hover:scale-105"
+                          }`}
+                        style={{ width: boxWidth, height: boxHeight, minWidth: 48, minHeight: 48, padding: "0.5rem" }}
                         onClick={() => {
                           setCollageSize(item.size)
                           setSelectedSize(item.size)
@@ -1254,11 +1320,22 @@ const PurchasePage = () => {
                           setOrientation(getSizeOrientation(item.size))
                         }}
                       >
-                        <span style={{ fontSize: `${fontScale * 1.1}rem`, lineHeight: 1.1 }} className="font-extrabold text-black mb-1 font-serif uppercase tracking-wide text-center leading-tight">{item.size}</span>
-                        <span style={{ fontSize: `${fontScale * 0.95}rem`, color: '#7B3F00', lineHeight: 1.1 }} className="font-extrabold mb-0.5 text-center leading-tight">
+                        <span
+                          style={{ fontSize: `${fontScale * 1.1}rem`, lineHeight: 1.1 }}
+                          className="font-extrabold text-black mb-1 font-serif uppercase tracking-wide text-center leading-tight"
+                        >
+                          {item.size}
+                        </span>
+                        <span
+                          style={{ fontSize: `${fontScale * 0.95}rem`, color: "#7B3F00", lineHeight: 1.1 }}
+                          className="font-extrabold mb-0.5 text-center leading-tight"
+                        >
                           Rs.{item.price.toLocaleString()}
                         </span>
-                        <span style={{ fontSize: `${fontScale * 0.7}rem`, color: '#7B3F00', lineHeight: 1.1 }} className="line-through text-center leading-tight">
+                        <span
+                          style={{ fontSize: `${fontScale * 0.7}rem`, color: "#7B3F00", lineHeight: 1.1 }}
+                          className="line-through text-center leading-tight"
+                        >
                           Rs.{oldPrice.toLocaleString()}
                         </span>
                       </div>
@@ -1268,7 +1345,7 @@ const PurchasePage = () => {
               </div>
             </div>
 
-            {/* Step 2: Orientation Selection (moved to second) */}
+            {/* Step 2: Orientation Selection */}
             {collageSize && (
               <div className="mb-10">
                 <h3 className="text-xl font-semibold mb-4 flex items-center">
@@ -1280,8 +1357,8 @@ const PurchasePage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
                   <div
                     className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${orientation === "portrait"
-                      ? "border-indigo-600 bg-indigo-50 scale-105"
-                      : "border-gray-200 hover:border-indigo-300"
+                        ? "border-indigo-600 bg-indigo-50 scale-105"
+                        : "border-gray-200 hover:border-indigo-300"
                       }`}
                     onClick={() => setOrientation("portrait")}
                   >
@@ -1294,8 +1371,8 @@ const PurchasePage = () => {
                   </div>
                   <div
                     className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${orientation === "landscape"
-                      ? "border-indigo-600 bg-indigo-50 scale-105"
-                      : "border-gray-200 hover:border-indigo-300"
+                        ? "border-indigo-600 bg-indigo-50 scale-105"
+                        : "border-gray-200 hover:border-indigo-300"
                       }`}
                     onClick={() => setOrientation("landscape")}
                   >
@@ -1310,7 +1387,7 @@ const PurchasePage = () => {
               </div>
             )}
 
-            {/* Step 3: Collage Category (moved to third) */}
+            {/* Step 3: Collage Category */}
             {collageSize && orientation && (
               <div className="mb-10">
                 <h3 className="text-xl font-semibold mb-4 flex items-center">
@@ -1324,8 +1401,8 @@ const PurchasePage = () => {
                     <div
                       key={category}
                       className={`border rounded-lg p-6 text-center cursor-pointer transition-all ${collageCategory === category
-                        ? "border-indigo-600 bg-indigo-50"
-                        : "border-gray-200 hover:border-indigo-300"
+                          ? "border-indigo-600 bg-indigo-50"
+                          : "border-gray-200 hover:border-indigo-300"
                         }`}
                       onClick={() => setCollageCategory(category)}
                     >
@@ -1336,55 +1413,98 @@ const PurchasePage = () => {
               </div>
             )}
 
-            {/* Step 4: Gallery Images (collage selection) - Updated to show full size and select on click */}
+            {/* Step 4: Updated Gallery Images with new design matching your uploaded mockup */}
             {collageSize && orientation && (
               <div className="mb-16">
-                <h3 className="text-3xl md:text-4xl font-serif font-bold text-center mb-10 tracking-wide">
-                  Please select the collages of your choice
-                </h3>
-                {collageCategories.map((category) => (
-                  <div key={category} className="mb-16">
-                    <h4 className="text-2xl md:text-3xl font-serif font-bold text-center mb-8 uppercase">{category}</h4>
-                    <div className="w-full max-w-md mx-auto">
-                      <Swiper
-                        modules={[Pagination, EffectFade]}
-                        pagination={{ clickable: true }}
-                        effect="fade"
-                        centeredSlides={true}
-                        slidesPerView={'auto'}
-                        spaceBetween={-40}
-                        className="rounded-2xl shadow-lg"
-                        style={{ minHeight: 320 }}
-                        breakpoints={{
-                          640: { slidesPerView: 2, centeredSlides: false, spaceBetween: 20 },
-                          768: { slidesPerView: 3, centeredSlides: false, spaceBetween: 20 },
-                        }}
-                      >
-                        {getCollageImages(collageSize, category).map((image, index) => (
-                          <SwiperSlide key={index} style={{ width: '70%', maxWidth: 320, minWidth: 180 }}>
-                            <div
-                              className={`relative flex flex-col items-center justify-center cursor-pointer transition-all duration-500`}
-                              onClick={() => { setSelectedCollageImage(image); setCollageCategory(category); }}
-                              style={{ width: '100%', height: 320, background: '#fff', border: '1.5px solid #eee', borderRadius: 18 }}
-                            >
-                              <img
-                                src={image || "/placeholder.svg"}
-                                alt={`${category} ${index + 1}`}
-                                className="w-full h-full object-cover rounded-[18px]"
-                                style={{ maxHeight: 320, minHeight: 320 }}
-                              />
-                              {selectedCollageImage === image && (
-                                <span className="absolute -top-4 -left-4 w-12 h-12 rounded-full border-4 border-black bg-white flex items-center justify-center z-10">
-                                  <img src={image || "/placeholder.svg"} alt="selected thumb" className="w-8 h-8 object-cover rounded-full" />
-                                </span>
-                              )}
-                            </div>
-                          </SwiperSlide>
-                        ))}
-                      </Swiper>
-                    </div>
+                {/* Main title matching the design */}
+                <div className="text-center mb-12">
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 leading-tight">
+                    Please select the collages of
+                    <br />
+                    your choice
+                  </h2>
+                </div>
+
+                {/* Sky background with clouds - matching the design */}
+                <div
+                  className="relative min-h-screen bg-gradient-to-b from-sky-200 via-sky-100 to-green-200 overflow-hidden rounded-lg"
+                  style={{
+                    backgroundImage: `
+                      radial-gradient(ellipse 200px 100px at 20% 30%, rgba(255,255,255,0.8) 0%, transparent 50%),
+                      radial-gradient(ellipse 150px 80px at 80% 20%, rgba(255,255,255,0.7) 0%, transparent 50%),
+                      radial-gradient(ellipse 180px 90px at 60% 40%, rgba(255,255,255,0.6) 0%, transparent 50%),
+                      radial-gradient(ellipse 220px 110px at 30% 60%, rgba(255,255,255,0.5) 0%, transparent 50%),
+                      radial-gradient(ellipse 160px 85px at 90% 70%, rgba(255,255,255,0.7) 0%, transparent 50%)
+                    `,
+                  }}
+                >
+                  {/* Green hills at bottom */}
+                  <div className="absolute bottom-0 left-0 w-full h-32">
+                    <svg viewBox="0 0 400 100" className="w-full h-full">
+                      <path d="M0,100 Q100,60 200,70 T400,65 L400,100 Z" fill="#84cc16" />
+                      <path d="M0,100 Q150,50 300,60 T400,55 L400,100 Z" fill="#65a30d" opacity="0.8" />
+                    </svg>
                   </div>
-                ))}
+
+                  {collageCategories.map((category, categoryIndex) => (
+                    <div key={category} className="relative mb-20 px-4">
+                      {/* Category title */}
+                      <div className="text-center mb-8 pt-8">
+                        <h3 className="text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-wider">
+                          {category}
+                        </h3>
+                      </div>
+
+                      {/* Horizontal scrollable container */}
+                      <div className="relative">
+                        <div
+                          className="flex overflow-x-auto gap-6 pb-4 px-4"
+                          style={{
+                            scrollbarWidth: "none",
+                            msOverflowStyle: "none",
+                            WebkitOverflowScrolling: "touch",
+                          }}
+                        >
+                          <style jsx>{`
+                            div::-webkit-scrollbar {
+                              display: none;
+                            }
+                          `}</style>
+
+                          {getCollageImages(collageSize, category).map((image, index) => (
+                            <div
+                              key={index}
+                              className="relative flex-shrink-0 cursor-pointer transition-all duration-300 hover:scale-105"
+                              onClick={() => {
+                                setSelectedCollageImage(image)
+                                setCollageCategory(category)
+                              }}
+                            >
+                              {/* Frame container */}
+                              <div className="relative bg-white rounded-2xl shadow-lg p-4 w-64 h-80">
+                                {/* Image */}
+                                <div className="w-full h-64 rounded-xl overflow-hidden bg-gray-100">
+                                  <img
+                                    src={image || "/placeholder.svg"}
+                                    alt={`${category} ${index + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+
+                                {/* Selection indicator - circular badge */}
+                                {selectedCollageImage === image && (
+                                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-black rounded-full border-4 border-white flex items-center justify-center shadow-lg">
+                                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -1493,7 +1613,8 @@ const PurchasePage = () => {
                                 {/* Frame type label */}
                                 <div className="px-2 md:px-4 py-1 md:py-2">
                                   <span
-                                    className={`text-sm md:text-lg font-bold whitespace-nowrap ${isSelected ? "text-blue-800" : "text-gray-800"}`}
+                                    className={`text-sm md:text-lg font-bold whitespace-nowrap ${isSelected ? "text-blue-800" : "text-gray-800"
+                                      }`}
                                   >
                                     {frameType}
                                   </span>
@@ -1512,8 +1633,8 @@ const PurchasePage = () => {
                           <div
                             key={index}
                             className={`relative cursor-pointer transition-all duration-300 flex-shrink-0 ${selectedFrameImage === image
-                              ? "transform scale-110 ring-4 ring-blue-400"
-                              : "hover:transform hover:scale-105"
+                                ? "transform scale-110 ring-4 ring-blue-400"
+                                : "hover:transform hover:scale-105"
                               }`}
                             onClick={() => setSelectedFrameImage(image)}
                           >
@@ -1558,6 +1679,7 @@ const PurchasePage = () => {
                   <p className="text-sm text-gray-500">{selectedFrameData?.category}</p>
                 </div>
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
@@ -1606,6 +1728,7 @@ const PurchasePage = () => {
                     <span className="font-semibold text-indigo-600">LKR {calculateTotal()}</span>
                   </div>
                 </div>
+
                 <div>
                   {/* Quantity Selection */}
                   <div className="mb-6">
@@ -1635,6 +1758,7 @@ const PurchasePage = () => {
                       </div>
                     </div>
                   </div>
+
                   <button
                     onClick={() => setShowForm(true)}
                     className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-md transition-colors flex items-center justify-center"
@@ -1658,6 +1782,7 @@ const PurchasePage = () => {
               <p className="text-gray-600 mb-6">
                 Thank you for your order. We will contact you shortly to confirm your purchase.
               </p>
+
               {/* Update the order confirmation details to show special size information */}
               <div className="bg-gray-50 p-4 rounded-md text-left mb-6">
                 <h3 className="font-semibold mb-2">Order Details:</h3>
@@ -1693,6 +1818,7 @@ const PurchasePage = () => {
                   <span className="text-gray-600">Total:</span> LKR {calculateTotal()}
                 </p>
               </div>
+
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <button
                   onClick={() => {
@@ -1727,6 +1853,7 @@ const PurchasePage = () => {
               <div className="p-6">
                 <h2 className="text-xl font-bold mb-4">Complete Your Order</h2>
                 <p className="text-gray-600 mb-6">Please provide your details for cash-on-delivery.</p>
+
                 <form onSubmit={handleSubmit}>
                   <div className="space-y-4">
                     <div>
@@ -1795,6 +1922,7 @@ const PurchasePage = () => {
                         placeholder="Any special instructions or requests for your order"
                       ></textarea>
                     </div>
+
                     {/* NEW IMAGE UPLOAD FIELD */}
                     <div>
                       <label className="block text-gray-700 mb-1">Upload Your Images (Optional)</label>
@@ -1813,11 +1941,13 @@ const PurchasePage = () => {
                           <p className="text-xs text-gray-500">JPEG, PNG, GIF, WebP (Max 5MB each, up to 10 images)</p>
                         </label>
                       </div>
+
                       {uploadError && (
                         <div className="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
                           {uploadError}
                         </div>
                       )}
+
                       {/* Uploaded Images Preview in Form */}
                       {uploadedImages.length > 0 && (
                         <div className="mt-3">
@@ -1846,6 +1976,7 @@ const PurchasePage = () => {
                       )}
                     </div>
                   </div>
+
                   <div className="mt-6 flex items-center justify-between">
                     <button
                       type="button"
