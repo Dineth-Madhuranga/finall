@@ -1309,8 +1309,8 @@ const PurchasePage = () => {
                       <div
                         key={item.size}
                         className={`border-4 border-black flex flex-col justify-center items-center cursor-pointer transition-all select-none bg-white ${selectedSize === item.size && !specialSizeSelected
-                            ? "ring-4 ring-green-400 scale-105"
-                            : "hover:scale-105"
+                          ? "ring-4 ring-green-400 scale-105"
+                          : "hover:scale-105"
                           }`}
                         style={{ width: boxWidth, height: boxHeight, minWidth: 48, minHeight: 48, padding: "0.5rem" }}
                         onClick={() => {
@@ -1357,8 +1357,8 @@ const PurchasePage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md">
                   <div
                     className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${orientation === "portrait"
-                        ? "border-indigo-600 bg-indigo-50 scale-105"
-                        : "border-gray-200 hover:border-indigo-300"
+                      ? "border-indigo-600 bg-indigo-50 scale-105"
+                      : "border-gray-200 hover:border-indigo-300"
                       }`}
                     onClick={() => setOrientation("portrait")}
                   >
@@ -1371,8 +1371,8 @@ const PurchasePage = () => {
                   </div>
                   <div
                     className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${orientation === "landscape"
-                        ? "border-indigo-600 bg-indigo-50 scale-105"
-                        : "border-gray-200 hover:border-indigo-300"
+                      ? "border-indigo-600 bg-indigo-50 scale-105"
+                      : "border-gray-200 hover:border-indigo-300"
                       }`}
                     onClick={() => setOrientation("landscape")}
                   >
@@ -1401,8 +1401,8 @@ const PurchasePage = () => {
                     <div
                       key={category}
                       className={`border rounded-lg p-6 text-center cursor-pointer transition-all ${collageCategory === category
-                          ? "border-indigo-600 bg-indigo-50"
-                          : "border-gray-200 hover:border-indigo-300"
+                        ? "border-indigo-600 bg-indigo-50"
+                        : "border-gray-200 hover:border-indigo-300"
                         }`}
                       onClick={() => setCollageCategory(category)}
                     >
@@ -1413,52 +1413,65 @@ const PurchasePage = () => {
               </div>
             )}
 
-            {/* Step 4: Updated Gallery Images with new design matching your uploaded mockup */}
+            {/* Step 4: Updated Gallery Images with horizontal scrolling design */}
             {collageSize && orientation && (
               <div className="mb-16">
                 {/* Main title matching the design */}
                 <div className="text-center mb-12">
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 leading-tight">
+                  <h2 className="text-2xl md:text-3xl font-light text-gray-800 mb-4 leading-tight">
                     Please select the collages of
                     <br />
                     your choice
                   </h2>
                 </div>
 
-                {/* Sky background with clouds - matching the design */}
-                <div
-                  className="relative min-h-screen bg-gradient-to-b from-sky-200 via-sky-100 to-green-200 overflow-hidden rounded-lg"
-                  style={{
-                    backgroundImage: `
-                      radial-gradient(ellipse 200px 100px at 20% 30%, rgba(255,255,255,0.8) 0%, transparent 50%),
-                      radial-gradient(ellipse 150px 80px at 80% 20%, rgba(255,255,255,0.7) 0%, transparent 50%),
-                      radial-gradient(ellipse 180px 90px at 60% 40%, rgba(255,255,255,0.6) 0%, transparent 50%),
-                      radial-gradient(ellipse 220px 110px at 30% 60%, rgba(255,255,255,0.5) 0%, transparent 50%),
-                      radial-gradient(ellipse 160px 85px at 90% 70%, rgba(255,255,255,0.7) 0%, transparent 50%)
-                    `,
-                  }}
-                >
-                  {/* Green hills at bottom */}
-                  <div className="absolute bottom-0 left-0 w-full h-32">
-                    <svg viewBox="0 0 400 100" className="w-full h-full">
-                      <path d="M0,100 Q100,60 200,70 T400,65 L400,100 Z" fill="#84cc16" />
-                      <path d="M0,100 Q150,50 300,60 T400,55 L400,100 Z" fill="#65a30d" opacity="0.8" />
-                    </svg>
-                  </div>
-
+                {/* Main container with light background */}
+                <div className="bg-gray-50 rounded-lg overflow-hidden">
                   {collageCategories.map((category, categoryIndex) => (
-                    <div key={category} className="relative mb-20 px-4">
+                    <div key={category} className="mb-12 last:mb-0">
                       {/* Category title */}
-                      <div className="text-center mb-8 pt-8">
-                        <h3 className="text-xl md:text-2xl font-bold text-gray-800 uppercase tracking-wider">
+                      <div className="text-center mb-6 pt-8">
+                        <h3 className="text-xl font-medium text-gray-800 uppercase tracking-wide">
                           {category}
                         </h3>
                       </div>
 
-                      {/* Horizontal scrollable container */}
-                      <div className="relative">
+                      {/* Horizontal scrollable container with scroll buttons */}
+                      <div className="relative px-4">
+                        {/* Left scroll button */}
+                        <button
+                          onClick={() => {
+                            const container = document.getElementById(`scroll-${categoryIndex}`);
+                            if (container) {
+                              container.scrollBy({ left: -200, behavior: 'smooth' });
+                            }
+                          }}
+                          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200"
+                        >
+                          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+
+                        {/* Right scroll button */}
+                        <button
+                          onClick={() => {
+                            const container = document.getElementById(`scroll-${categoryIndex}`);
+                            if (container) {
+                              container.scrollBy({ left: 200, behavior: 'smooth' });
+                            }
+                          }}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-all duration-200"
+                        >
+                          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="m9 5 7 7-7 7" />
+                          </svg>
+                        </button>
+
+                        {/* Scrollable container */}
                         <div
-                          className="flex overflow-x-auto gap-6 pb-4 px-4"
+                          id={`scroll-${categoryIndex}`}
+                          className="flex overflow-x-auto gap-4 pb-4 px-8"
                           style={{
                             scrollbarWidth: "none",
                             msOverflowStyle: "none",
@@ -1474,29 +1487,89 @@ const PurchasePage = () => {
                           {getCollageImages(collageSize, category).map((image, index) => (
                             <div
                               key={index}
-                              className="relative flex-shrink-0 cursor-pointer transition-all duration-300 hover:scale-105"
-                              onClick={() => {
-                                setSelectedCollageImage(image)
-                                setCollageCategory(category)
-                              }}
+                              className="flex-shrink-0 w-48 mr-4 last:mr-0"
                             >
-                              {/* Frame container */}
-                              <div className="relative bg-white rounded-2xl shadow-lg p-4 w-64 h-80">
-                                {/* Image */}
-                                <div className="w-full h-64 rounded-xl overflow-hidden bg-gray-100">
+                              <div
+                                className="relative bg-gradient-to-b from-sky-200 to-sky-300 rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:shadow-lg active:scale-95"
+                                onClick={() => {
+                                  setSelectedCollageImage(image)
+                                  setCollageCategory(category)
+                                }}
+                                style={{ aspectRatio: '3/4' }}
+                              >
+                                {/* Sky and clouds background with variations */}
+                                <div className="absolute inset-0">
+                                  {/* Clouds - different positions for each variation */}
+                                  <div
+                                    className="absolute w-12 h-6 bg-white rounded-full opacity-90"
+                                    style={{
+                                      top: `${16 + (index * 4)}px`,
+                                      left: `${16 + (index * 8)}px`
+                                    }}
+                                  ></div>
+                                  <div
+                                    className="absolute w-8 h-4 bg-white rounded-full opacity-80"
+                                    style={{
+                                      top: `${24 + (index * 3)}px`,
+                                      left: `${32 + (index * 6)}px`
+                                    }}
+                                  ></div>
+                                  <div
+                                    className="absolute w-10 h-5 bg-white rounded-full opacity-85"
+                                    style={{
+                                      top: `${32 + (index * 2)}px`,
+                                      right: `${24 + (index * 4)}px`
+                                    }}
+                                  ></div>
+                                  <div
+                                    className="absolute w-6 h-3 bg-white rounded-full opacity-75"
+                                    style={{
+                                      top: `${48 + (index * 3)}px`,
+                                      right: `${32 + (index * 5)}px`
+                                    }}
+                                  ></div>
+
+                                  {/* Rolling hills with different curves */}
+                                  <div className="absolute bottom-0 left-0 right-0">
+                                    <svg viewBox="0 0 400 120" className="w-full h-auto">
+                                      <path
+                                        d={`M0,120 L0,${80 + index * 5} Q${100 + index * 20},${40 + index * 10} ${200 + index * 10},${60 + index * 5} Q${300 + index * 15},${80 + index * 8} 400,${50 + index * 12} L400,120 Z`}
+                                        fill="#7dd3fc"
+                                        opacity="0.6"
+                                      />
+                                      <path
+                                        d={`M0,120 L0,${90 + index * 3} Q${150 + index * 25},${50 + index * 8} ${300 + index * 12},${70 + index * 6} Q${350 + index * 8},${80 + index * 4} 400,${65 + index * 10} L400,120 Z`}
+                                        fill="#86efac"
+                                        opacity="0.8"
+                                      />
+                                      <path
+                                        d={`M0,120 L0,${100 + index * 2} Q${100 + index * 15},${80 + index * 5} ${200 + index * 8},${85 + index * 3} Q${300 + index * 10},${90 + index * 4} 400,${80 + index * 8} L400,120 Z`}
+                                        fill="#65a30d"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+
+                                {/* Actual collage image overlay */}
+                                <div className="absolute inset-2 rounded-md overflow-hidden bg-white/10 backdrop-blur-sm border-4 border-white shadow-sm">
                                   <img
                                     src={image || "/placeholder.svg"}
                                     alt={`${category} ${index + 1}`}
-                                    className="w-full h-full object-cover"
+                                    className="w-full h-full object-cover opacity-80 hover:opacity-90 transition-opacity duration-200"
                                   />
                                 </div>
 
-                                {/* Selection indicator - circular badge */}
-                                {selectedCollageImage === image && (
-                                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-black rounded-full border-4 border-white flex items-center justify-center shadow-lg">
-                                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                                  </div>
-                                )}
+                                {/* Selection indicator */}
+                                <div className={`absolute top-3 right-3 w-6 h-6 rounded-full border-2 transition-all duration-200 z-10 ${selectedCollageImage === image
+                                  ? 'bg-green-500 border-green-500'
+                                  : 'bg-white/80 border-gray-300'
+                                  }`}>
+                                  {selectedCollageImage === image && (
+                                    <svg className="w-4 h-4 text-white absolute top-0.5 left-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -1633,8 +1706,8 @@ const PurchasePage = () => {
                           <div
                             key={index}
                             className={`relative cursor-pointer transition-all duration-300 flex-shrink-0 ${selectedFrameImage === image
-                                ? "transform scale-110 ring-4 ring-blue-400"
-                                : "hover:transform hover:scale-105"
+                              ? "transform scale-110 ring-4 ring-blue-400"
+                              : "hover:transform hover:scale-105"
                               }`}
                             onClick={() => setSelectedFrameImage(image)}
                           >
@@ -1848,85 +1921,85 @@ const PurchasePage = () => {
 
         {/* Checkout Form */}
         {showForm && !formSubmitted && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-md w-full overflow-hidden">
-              <div className="p-6">
-                <h2 className="text-xl font-bold mb-4">Complete Your Order</h2>
-                <p className="text-gray-600 mb-6">Please provide your details for cash-on-delivery.</p>
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+            <div className="bg-white rounded-lg w-full max-w-md sm:max-w-lg mx-auto overflow-hidden shadow-lg max-h-[90vh] flex flex-col">
+              <div className="p-3 sm:p-6 overflow-y-auto flex-1">
+                <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Complete Your Order</h2>
+                <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Please provide your details for cash-on-delivery.</p>
 
                 <form onSubmit={handleSubmit}>
-                  <div className="space-y-4">
+                  <div className="space-y-3 sm:space-y-4">
                     <div>
-                      <label className="block text-gray-700 mb-1">Full Name</label>
+                      <label className="block text-gray-700 mb-1 text-sm">Full Name</label>
                       <input
                         type="text"
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-2 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-1">Phone Number</label>
+                      <label className="block text-gray-700 mb-1 text-sm">Phone Number</label>
                       <input
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-2 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-1">Email Address</label>
+                      <label className="block text-gray-700 mb-1 text-sm">Email Address</label>
                       <input
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-2 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-1">Delivery Address</label>
+                      <label className="block text-gray-700 mb-1 text-sm">Delivery Address</label>
                       <input
                         type="text"
                         name="address"
                         value={formData.address}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-2 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-1">WhatsApp Number</label>
+                      <label className="block text-gray-700 mb-1 text-sm">WhatsApp Number</label>
                       <input
                         type="tel"
                         name="whatsapp"
                         value={formData.whatsapp}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-2 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
                         placeholder="Same as phone number if applicable"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-700 mb-1">Any Special Requests</label>
+                      <label className="block text-gray-700 mb-1 text-sm">Any Special Requests</label>
                       <textarea
                         name="requests"
                         value={formData.requests}
                         onChange={handleInputChange}
                         rows={3}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                        className="w-full px-2 py-1 sm:px-4 sm:py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none text-sm"
                         placeholder="Any special instructions or requests for your order"
                       ></textarea>
                     </div>
 
                     {/* NEW IMAGE UPLOAD FIELD */}
                     <div>
-                      <label className="block text-gray-700 mb-1">Upload Your Images (Optional)</label>
-                      <div className="border-2 border-dashed border-gray-300 rounded-md p-4 text-center hover:border-indigo-400 transition-colors">
+                      <label className="block text-gray-700 mb-1 text-sm">Upload Your Images (Optional)</label>
+                      <div className="border-2 border-dashed border-gray-300 rounded-md p-2 sm:p-4 text-center hover:border-indigo-400 transition-colors">
                         <input
                           type="file"
                           multiple
@@ -1937,13 +2010,13 @@ const PurchasePage = () => {
                         />
                         <label htmlFor="form-image-upload" className="cursor-pointer flex flex-col items-center">
                           <Upload className="w-8 h-8 text-gray-400 mb-2" />
-                          <p className="text-sm font-medium text-gray-700 mb-1">Click to upload images</p>
+                          <p className="text-xs sm:text-sm font-medium text-gray-700 mb-1">Click to upload images</p>
                           <p className="text-xs text-gray-500">JPEG, PNG, GIF, WebP (Max 5MB each, up to 10 images)</p>
                         </label>
                       </div>
 
                       {uploadError && (
-                        <div className="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                        <div className="mt-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-xs sm:text-sm">
                           {uploadError}
                         </div>
                       )}
@@ -1951,8 +2024,8 @@ const PurchasePage = () => {
                       {/* Uploaded Images Preview in Form */}
                       {uploadedImages.length > 0 && (
                         <div className="mt-3">
-                          <p className="text-sm text-gray-600 mb-2">Uploaded Images ({uploadedImages.length}/10):</p>
-                          <div className="grid grid-cols-3 gap-2">
+                          <p className="text-xs sm:text-sm text-gray-600 mb-2">Uploaded Images ({uploadedImages.length}/10):</p>
+                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {uploadedImages.map((image, index) => (
                               <div key={index} className="relative group">
                                 <div className="aspect-square bg-gray-100 rounded overflow-hidden">
@@ -1977,17 +2050,17 @@ const PurchasePage = () => {
                     </div>
                   </div>
 
-                  <div className="mt-6 flex items-center justify-between">
+                  <div className="mt-4 sm:mt-6 flex items-center justify-between gap-2">
                     <button
                       type="button"
                       onClick={() => setShowForm(false)}
-                      className="text-gray-600 hover:text-gray-800 transition-colors"
+                      className="text-gray-600 hover:text-gray-800 transition-colors w-1/2 sm:w-auto text-sm sm:text-base"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-6 rounded-md transition-colors"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 sm:px-6 rounded-md transition-colors w-1/2 sm:w-auto text-sm sm:text-base"
                     >
                       Place Order
                     </button>
